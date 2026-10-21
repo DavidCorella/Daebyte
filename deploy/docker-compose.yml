@@ -1,0 +1,19 @@
+name: daebyte
+
+services:
+  web:
+    image: ghcr.io/davidcorella/daebyte-web:${IMAGE_TAG:-prod}
+    restart: unless-stopped
+    networks: [interna]
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
+    depends_on: [web]
+    networks: [interna]
+
+networks:
+  interna:

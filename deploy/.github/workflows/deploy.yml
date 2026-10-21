@@ -1,0 +1,44 @@
+name: Deploy prod
+on:
+  push:
+    branches: [prod]
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "OWNER=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ env.OWNER }}/daebyte-web:prod
+            ghcr.io/${{ env.OWNER }}/daebyte-web:${{ github.sha }}
+
+  deploy:
+    needs: build
+    runs-on: [self-hosted, daebyte]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: deploy
+      - run: |
+          D=/opt/sites/daebyte
+          cp deploy/docker-compose.yml $D/docker-compose.yml
+          install -m 700 deploy/deploy.sh $D/deploy.sh
+          $D/deploy.sh ${{ github.sha }}
