@@ -4,6 +4,7 @@
   --purple-light: #7b74c9;
   --purple-soft: #ecebf7;
   --navy: #122840;
+  --wa: #25d366;
 
   --bg: #fafafe;
   --surface: rgba(255, 255, 255, 0.75);
@@ -29,6 +30,10 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
