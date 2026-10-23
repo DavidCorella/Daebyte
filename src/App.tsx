@@ -2,10 +2,12 @@ import { useState, type ReactNode } from 'react'
 import './App.css'
 
 const CONTACT_EMAIL = 'contacto@daebyte.com'
-const WHATSAPP_DISPLAY = '6179-3368'
-const WHATSAPP_URL = `https://wa.me/50661793368?text=${encodeURIComponent(
+const WHATSAPP_DISPLAY = '6096-0986'
+const WHATSAPP_URL = `https://wa.me/50660960986?text=${encodeURIComponent(
   'Hola DaeByte, me gustaría información sobre sus servicios.',
 )}`
+const INSTAGRAM_USER = '_daebyte'
+const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_USER}/`
 const LOGO_SRC = '/logo.png'
 
 const NAV = [
@@ -357,15 +359,20 @@ function App() {
                 <strong>{CONTACT_EMAIL}</strong>
               </span>
             </a>
-            <div className="contact-card contact-soon" aria-disabled="true">
+            <a
+              className="contact-card contact-ig"
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <span className="contact-icon">
                 <InstagramIcon />
               </span>
               <span className="contact-text">
                 <small>Instagram</small>
-                <strong>Próximamente</strong>
+                <strong>@{INSTAGRAM_USER}</strong>
               </span>
-            </div>
+            </a>
           </div>
         </div>
       </section>
@@ -382,9 +389,9 @@ function App() {
           <a href={`mailto:${CONTACT_EMAIL}`} aria-label="Correo">
             <MailIcon />
           </a>
-          <span className="soon" title="Instagram, próximamente" aria-label="Instagram, próximamente">
+          <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <InstagramIcon />
-          </span>
+          </a>
         </div>
         <span className="footer-slogan">Más que bytes, soluciones.</span>
       </footer>

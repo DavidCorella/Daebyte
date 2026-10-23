@@ -637,9 +637,9 @@ a.contact-wa:hover {
   overflow-wrap: anywhere;
 }
 
-.contact-soon {
-  opacity: 0.6;
-  cursor: default;
+.contact-ig .contact-icon {
+  background: linear-gradient(45deg, #f9ce34, #ee2a7b 50%, #6228d7);
+  box-shadow: 0 8px 20px -6px rgba(238, 42, 123, 0.6);
 }
 
 .wa-icon {
@@ -806,8 +806,7 @@ a.contact-wa:hover {
   gap: 8px;
 }
 
-.footer-social a,
-.footer-social span {
+.footer-social a {
   width: 36px;
   height: 36px;
   border-radius: 10px;
@@ -835,11 +834,6 @@ a.contact-wa:hover {
   background: var(--purple);
   border-color: var(--purple);
   color: #fff;
-}
-
-.footer-social .soon {
-  opacity: 0.45;
-  cursor: default;
 }
 
 .footer-slogan {
