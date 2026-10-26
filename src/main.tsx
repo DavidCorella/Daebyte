@@ -1,9 +1,11 @@
 import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { hydrateRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
-createRoot(document.getElementById('root')!).render(
+// El HTML ya viene prerenderizado desde el build; React solo lo activa
+hydrateRoot(
+  document.getElementById('root')!,
   <StrictMode>
     <App />
   </StrictMode>,
