@@ -3,15 +3,16 @@ import './App.css'
 
 const CONTACT_EMAIL = 'contacto@daebyte.com'
 const WHATSAPP_DISPLAY = '6096-0986'
-const WHATSAPP_URL = `https://wa.me/50660960986?text=${encodeURIComponent(
-  'Hola DaeByte, me gustaría información sobre sus servicios.',
-)}`
+const waLink = (message: string) =>
+  `https://wa.me/50660960986?text=${encodeURIComponent(message)}`
+const WHATSAPP_URL = waLink('Hola DaeByte, me gustaría información sobre sus servicios.')
 const INSTAGRAM_USER = '_daebyte'
 const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_USER}/`
 const LOGO_SRC = '/logo.png'
 
 const NAV = [
   { href: '#servicios', label: 'Servicios' },
+  { href: '#planes', label: 'Planes' },
   { href: '#proceso', label: 'Cómo trabajamos' },
   { href: '#clientes', label: 'Clientes' },
   { href: '#nosotros', label: 'Nosotros' },
@@ -95,6 +96,105 @@ const STEPS = [
 
 const VALUES = ['Calidad', 'Seguridad', 'Atención cercana', 'Un solo proveedor']
 
+// También se publican como datos estructurados FAQPage para Google
+const FAQS = [
+  {
+    q: '¿Cuánto tarda en estar lista mi página?',
+    a: 'Una página básica está lista en 1 a 3 días hábiles desde que recibimos el adelanto y el material. Una página corporativa toma de 1 a 3 semanas, según la cantidad de secciones. Las aplicaciones a medida se planifican por etapas y el plazo se define en la cotización.',
+  },
+  {
+    q: '¿Qué necesito para empezar?',
+    a: 'Tu logo, los textos principales (quiénes son, qué ofrecen y cómo contactarlos) y algunas fotos de tu negocio o productos. Si no tienes textos o fotos, te ayudamos: redactamos los textos contigo a partir de una conversación y usamos imágenes profesionales libres de derechos. Si aún no tienes correos con tu dominio, también te ayudamos a configurarlos.',
+  },
+  {
+    q: '¿Puedo pedir cambios?',
+    a: 'Sí. Durante el desarrollo te mostramos los avances y hacemos los ajustes que necesites hasta la entrega final. Una vez entregada la página, el precio incluye 2 cambios adicionales y, mientras tengas activo tu plan de hosting, cuentas con 2 cambios incluidos cada mes sobre el contenido existente.',
+  },
+  {
+    q: '¿Cómo se realiza el pago?',
+    a: 'Para iniciar tu proyecto solo necesitas un adelanto del 15%. El 85% restante se paga al momento de la entrega.',
+  },
+  {
+    q: '¿Qué formas de pago aceptan?',
+    a: 'Aceptamos SINPE Móvil y transferencia bancaria. Puedes pagar en dólares o en colones, al tipo de cambio de referencia del Banco Central de Costa Rica (BCCR) del día de cada pago. Antes de empezar te enviamos una cotización formal con el plan y las condiciones acordadas.',
+  },
+  {
+    q: '¿Emiten factura electrónica?',
+    a: 'Sí, emitimos factura electrónica por todos nuestros servicios. Los precios publicados son más IVA (13%).',
+  },
+  {
+    q: '¿El dominio está incluido?',
+    a: 'El dominio no está incluido en el precio; su costo ronda los $10 al año. Se registra a tu nombre, así que siempre es tuyo: nosotros solo lo administramos por ti.',
+  },
+  {
+    q: '¿Qué incluye el plan de hosting?',
+    a: 'Alojamiento en nuestra propia infraestructura, mantenimiento de seguridad, actualizaciones, respaldos y 2 cambios al mes sobre el contenido existente de tu proyecto, sin importar su tamaño. Las funciones nuevas se evalúan según su alcance: pueden quedar incluidas en el plan o cotizarse aparte. Además, respondemos tus solicitudes de soporte en un máximo de 2 horas en horario hábil.',
+  },
+  {
+    q: '¿Es obligatorio contratar el hosting?',
+    a: 'No. Si lo prefieres, te entregamos tu página para que la publiques donde quieras. Si necesitas que la configuremos en otro proveedor, ese servicio se cotiza aparte.',
+  },
+  {
+    q: '¿Puedo cancelar el hosting?',
+    a: 'Sí, cuando quieras y sin permanencia mínima. Si cancelas o dejas de pagar el servicio, te entregamos tu proyecto completo, los respaldos y tus datos. Nunca quedas atado a nosotros.',
+  },
+]
+
+// Precios en dólares (USD), sin IVA. `build: null` = a cotizar
+const PLANS: {
+  name: string
+  tagline: string
+  build: string | null
+  hosting: string
+  features: string[]
+  art: 'landing' | 'corporate' | 'app'
+  featured?: boolean
+}[] = [
+  {
+    name: 'Página básica',
+    tagline: 'Landing page o sitio sencillo para darte a conocer.',
+    build: '$120',
+    hosting: '$30',
+    features: [
+      'Diseño a medida con tu marca',
+      'Adaptada a celulares',
+      'Botón de WhatsApp y redes sociales',
+      'Configuración básica para Google',
+      'Certificado de seguridad (https)',
+    ],
+    art: 'landing',
+  },
+  {
+    name: 'Página corporativa',
+    tagline: 'Sitio completo para presentar tu empresa con profesionalismo.',
+    build: null,
+    hosting: '$60',
+    features: [
+      'Varias páginas y secciones',
+      'Catálogo de productos o servicios',
+      'Formularios de contacto',
+      'Optimización para Google',
+      'Correos con tu dominio',
+    ],
+    art: 'corporate',
+    featured: true,
+  },
+  {
+    name: 'Aplicación a medida',
+    tagline: 'Sistemas web y páginas complejas para operar tu negocio.',
+    build: null,
+    hosting: '$60',
+    features: [
+      'Usuarios, roles y panel administrativo',
+      'Bases de datos e inventarios',
+      'Pagos e integraciones con otros sistemas',
+      'Automatización de procesos',
+      'Reportes a la medida',
+    ],
+    art: 'app',
+  },
+]
+
 function Logo({ className }: { className: string }) {
   const [failed, setFailed] = useState(false)
 
@@ -139,6 +239,78 @@ function Circuit({ className }: { className: string }) {
   )
 }
 
+// Ilustraciones de cada plan, dibujadas con la paleta de la marca
+function PlanArt({ kind }: { kind: 'landing' | 'corporate' | 'app' }) {
+  const browser = (x: number, y: number, w: number, h: number) => (
+    <>
+      <rect x={x} y={y} width={w} height={h} rx="8" className="pa-window" />
+      <path d={`M${x} ${y + 16}h${w}`} className="pa-line" />
+      <circle cx={x + 10} cy={y + 8} r="2.5" className="pa-dot" />
+      <circle cx={x + 18} cy={y + 8} r="2.5" className="pa-dot" />
+      <circle cx={x + 26} cy={y + 8} r="2.5" className="pa-dot" />
+    </>
+  )
+
+  return (
+    <svg viewBox="0 0 280 160" className="plan-art" aria-hidden="true">
+      {kind === 'landing' && (
+        <>
+          {browser(50, 14, 180, 132)}
+          <rect x="66" y="46" width="84" height="9" rx="4.5" className="pa-strong" />
+          <rect x="66" y="62" width="64" height="6" rx="3" className="pa-soft" />
+          <rect x="66" y="73" width="72" height="6" rx="3" className="pa-soft" />
+          <rect x="66" y="90" width="46" height="14" rx="7" className="pa-accent" />
+          <rect x="160" y="42" width="54" height="64" rx="6" className="pa-soft" />
+          <circle cx="178" cy="62" r="7" className="pa-light" />
+          <path d="m164 100 16-18 12 12 8-7 14 13z" className="pa-light" />
+          <rect x="66" y="118" width="148" height="16" rx="4" className="pa-soft" />
+        </>
+      )}
+      {kind === 'corporate' && (
+        <>
+          <g opacity="0.45">{browser(24, 30, 150, 110)}</g>
+          <g opacity="0.7">{browser(62, 22, 150, 114)}</g>
+          {browser(100, 14, 156, 130)}
+          <rect x="114" y="40" width="128" height="34" rx="5" className="pa-accent" />
+          <rect x="124" y="50" width="60" height="7" rx="3.5" className="pa-white" />
+          <rect x="124" y="61" width="40" height="5" rx="2.5" className="pa-white-soft" />
+          <rect x="114" y="82" width="38" height="30" rx="5" className="pa-soft" />
+          <rect x="159" y="82" width="38" height="30" rx="5" className="pa-soft" />
+          <rect x="204" y="82" width="38" height="30" rx="5" className="pa-soft" />
+          <rect x="114" y="120" width="70" height="6" rx="3" className="pa-soft" />
+        </>
+      )}
+      {kind === 'app' && (
+        <>
+          {browser(30, 14, 220, 132)}
+          <rect x="30" y="30" width="46" height="116" className="pa-strong" />
+          <rect x="40" y="42" width="26" height="5" rx="2.5" className="pa-white" />
+          <rect x="40" y="56" width="22" height="4" rx="2" className="pa-white-soft" />
+          <rect x="40" y="67" width="24" height="4" rx="2" className="pa-white-soft" />
+          <rect x="40" y="78" width="18" height="4" rx="2" className="pa-white-soft" />
+          <rect x="88" y="40" width="46" height="24" rx="5" className="pa-soft" />
+          <rect x="140" y="40" width="46" height="24" rx="5" className="pa-soft" />
+          <rect x="192" y="40" width="46" height="24" rx="5" className="pa-accent" />
+          <rect x="88" y="72" width="150" height="62" rx="5" className="pa-soft" />
+          <rect x="100" y="110" width="12" height="16" rx="2" className="pa-light" />
+          <rect x="120" y="98" width="12" height="28" rx="2" className="pa-light" />
+          <rect x="140" y="104" width="12" height="22" rx="2" className="pa-light" />
+          <rect x="160" y="88" width="12" height="38" rx="2" className="pa-accent" />
+          <rect x="180" y="94" width="12" height="32" rx="2" className="pa-light" />
+          <rect x="200" y="82" width="12" height="44" rx="2" className="pa-accent" />
+          <circle cx="226" cy="84" r="3" className="pa-accent" />
+        </>
+      )}
+    </svg>
+  )
+}
+
+const Check = () => (
+  <svg viewBox="0 0 24 24" className="check" aria-hidden="true">
+    <path d="m5 12.5 4.5 4.5L19 7.5" />
+  </svg>
+)
+
 const Arrow = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path d="M5 12h14M13 6l6 6-6 6" />
@@ -166,7 +338,12 @@ const InstagramIcon = () => (
   </svg>
 )
 
+// Preguntas visibles antes de pulsar "Ver más"; el resto sigue en el HTML para Google
+const FAQ_VISIBLE = 5
+
 function App() {
+  const [showAllFaqs, setShowAllFaqs] = useState(false)
+
   return (
     <div className="page">
       <header className="nav">
@@ -252,6 +429,147 @@ function App() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section id="planes" className="section">
+        <div className="section-head">
+          <span className="eyebrow">Planes</span>
+          <h2>Precios claros, sin sorpresas</h2>
+          <p>
+            Desarrollo, hosting, mantenimiento y soporte con un solo
+            proveedor. Elige el plan que se ajusta a tu negocio.
+          </p>
+        </div>
+
+        <div className="plans">
+          {PLANS.map((p) => (
+            <article key={p.name} className={`plan${p.featured ? ' plan-featured' : ''}`}>
+              {p.featured && <span className="plan-badge">Recomendado</span>}
+              <PlanArt kind={p.art} />
+
+              <div className="plan-body">
+                <h3>{p.name}</h3>
+                <p className="plan-tagline">{p.tagline}</p>
+
+                <div className="plan-prices">
+                  <div className="plan-price">
+                    <small>Desarrollo · pago único</small>
+                    {p.build ? (
+                      <strong>
+                        {p.build} <span>+ IVA</span>
+                      </strong>
+                    ) : (
+                      <strong className="plan-quote">A cotizar</strong>
+                    )}
+                  </div>
+                  <div className="plan-price">
+                    <small>Hosting, mantenimiento y soporte</small>
+                    <strong>
+                      {p.hosting}
+                      <span>/mes + IVA</span>
+                    </strong>
+                  </div>
+                </div>
+
+                <ul className="plan-features">
+                  {p.features.map((f) => (
+                    <li key={f}>
+                      <Check />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <a
+                  className={`btn ${p.featured ? 'btn-primary' : 'btn-ghost'} plan-cta`}
+                  href={waLink(`Hola DaeByte, me interesa el plan "${p.name}". ¿Me pueden dar más información?`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {p.build ? 'Quiero este plan' : 'Solicitar cotización'}
+                  <Arrow />
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="plans-note">
+          <div>
+            <strong>Empieza con solo 15% de adelanto</strong>
+            <span>El resto se paga al entregar el proyecto.</span>
+          </div>
+          <div>
+            <strong>Hosting con todo incluido</strong>
+            <span>Mantenimiento, respaldos, 2 cambios al mes y respuesta en máximo 2 horas hábiles.</span>
+          </div>
+          <div>
+            <strong>Precios en dólares (USD)</strong>
+            <span>Más IVA (13%). Pago en dólares o colones, con factura electrónica.</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="preguntas" className="section">
+        <div className="section-head">
+          <span className="eyebrow">Preguntas frecuentes</span>
+          <h2>Resolvemos tus dudas</h2>
+        </div>
+
+        <div className={`faq${showAllFaqs ? '' : ' faq-collapsed'}`} id="faq-list">
+          {FAQS.map((f, i) => (
+            // name="faq" mantiene abierta una sola respuesta a la vez
+            <details
+              key={f.q}
+              name="faq"
+              className={`faq-item${i >= FAQ_VISIBLE ? ' faq-extra' : ''}`}
+            >
+              <summary>
+                {f.q}
+                <span className="faq-toggle" aria-hidden="true" />
+              </summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
+
+        {FAQS.length > FAQ_VISIBLE && (
+          <div className="faq-expand">
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              aria-expanded={showAllFaqs}
+              aria-controls="faq-list"
+              onClick={() => setShowAllFaqs((v) => !v)}
+            >
+              {showAllFaqs
+                ? 'Ver menos preguntas'
+                : `Ver más preguntas (${FAQS.length - FAQ_VISIBLE})`}
+            </button>
+          </div>
+        )}
+
+        <p className="faq-more">
+          ¿Tienes otra pregunta?{' '}
+          <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+            Escríbenos por WhatsApp
+          </a>
+        </p>
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'FAQPage',
+              mainEntity: FAQS.map((f) => ({
+                '@type': 'Question',
+                name: f.q,
+                acceptedAnswer: { '@type': 'Answer', text: f.a },
+              })),
+            }),
+          }}
+        />
       </section>
 
       <section id="proceso" className="section section-alt">
