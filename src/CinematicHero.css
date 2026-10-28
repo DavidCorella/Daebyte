@@ -1,0 +1,163 @@
+/* Portada cinematográfica. Sin JS o con "reducir movimiento" se ve la portada normal. */
+
+.cine-canvas,
+.cine-captions,
+.cine-hint {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* desde el primer pintado (antes de que cargue React) arranca en la escena oscura */
+  .js .cine {
+    min-height: calc(100svh - 64px);
+    display: flex;
+    align-items: center;
+    padding-block: 40px 48px;
+  }
+
+  .js .cine .hero-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    animation: none;
+  }
+
+  .js .cine .hero-inner > * {
+    opacity: 0;
+  }
+
+  .js .cine-canvas {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background: #070b16;
+  }
+
+  /* una vez que el canvas dibuja, el fondo lo pinta él */
+  .js .cine.is-animated .cine-canvas {
+    background: transparent;
+  }
+
+  .js .cine-captions {
+    display: block;
+  }
+
+  .js .cine-hint {
+    display: flex;
+  }
+}
+
+.cine-caption {
+  position: absolute;
+  left: 50%;
+  /* --cine-h = alto visible de la escena (lo calcula CinematicHero.tsx) */
+  top: calc(var(--cine-h, 100svh) * 0.72);
+  z-index: 3;
+  width: min(90%, 760px);
+  margin: 0;
+  transform: translateX(-50%);
+  text-align: center;
+  font-family: var(--heading);
+  font-size: clamp(24px, 4vw, 44px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-shadow: 0 4px 30px rgba(7, 11, 22, 0.8);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cine-hint {
+  position: absolute;
+  left: 50%;
+  /* anclado al borde inferior visible, sin importar su alto */
+  top: var(--cine-h, 100svh);
+  z-index: 3;
+  transform: translate(-50%, calc(-100% - 22px));
+  white-space: nowrap;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+  pointer-events: none;
+}
+
+.cine-mouse {
+  position: relative;
+  width: 24px;
+  height: 38px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 14px;
+}
+
+.cine-mouse::after {
+  content: '';
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  width: 4px;
+  height: 8px;
+  margin-left: -2px;
+  border-radius: 2px;
+  background: #fff;
+  animation: wheel 1.6s ease-in-out infinite;
+}
+
+@keyframes wheel {
+  0% {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* Menú legible mientras la escena está oscura */
+.nav.is-over-dark {
+  background: rgba(7, 11, 22, 0.94);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.nav.is-over-dark .nav-brand,
+.nav.is-over-dark .nav-links a {
+  color: #e8e9f3;
+}
+
+.nav.is-over-dark .nav-brand img {
+  filter: brightness(0) invert(1);
+}
+
+header.nav {
+  transition:
+    background-color 0.4s,
+    border-color 0.4s,
+    box-shadow 0.3s;
+}
+
+.nav-brand,
+.nav-links a {
+  transition: color 0.4s;
+}
+
+@media (max-width: 600px) {
+  /* por encima del botón flotante de WhatsApp */
+  .cine-hint {
+    transform: translate(-50%, calc(-100% - 92px));
+  }
+  .cine-caption {
+    top: calc(var(--cine-h, 100svh) * 0.68);
+    font-size: clamp(21px, 6vw, 26px);
+  }
+}

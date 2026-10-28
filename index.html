@@ -3,6 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Activa las animaciones de aparición solo si hay JavaScript -->
+    <script>document.documentElement.classList.add('js')</script>
+    <!-- La portada es una película: al recargar, empezar siempre desde arriba
+         (salvo enlaces a una sección, como /#planes) -->
+    <script>
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
+      if (!location.hash) window.scrollTo(0, 0)
+    </script>
     <title>Páginas Web y Software a Medida en Costa Rica | DaeByte</title>
     <meta
       name="description"

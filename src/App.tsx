@@ -1,4 +1,10 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Lenis from 'lenis'
+import 'lenis/dist/lenis.css'
+import CinematicHero from './CinematicHero.tsx'
+import ScrollStory from './ScrollStory.tsx'
 import './App.css'
 
 const CONTACT_EMAIL = 'contacto@daebyte.com'
@@ -87,12 +93,6 @@ const SERVICES = [
   },
 ]
 
-const STEPS = [
-  { title: 'Diseño', text: 'Entendemos tu negocio y definimos juntos la solución ideal.' },
-  { title: 'Programación', text: 'Desarrollamos con buenas prácticas, avances visibles y calidad.' },
-  { title: 'Hosting', text: 'Publicamos en nuestra infraestructura propia, segura y confiable.' },
-  { title: 'Soporte', text: 'Seguimos a tu lado para que tu solución crezca contigo.' },
-]
 
 const VALUES = ['Calidad', 'Seguridad', 'Atención cercana', 'Un solo proveedor']
 
@@ -223,21 +223,44 @@ function ClientLogo({ name, logo }: { name: string; logo?: string }) {
   return <img src={logo} alt={name} onError={() => setFailed(true)} />
 }
 
-// Trazas de circuito decorativas, inspiradas en los nodos del logo
+// Trazas de circuito decorativas, inspiradas en los nodos del logo.
+// Las que tienen `dur` llevan un pulso de luz que las recorre como datos.
+const CIRCUIT_TRACES = [
+  { d: 'M0 60h120a20 20 0 0 1 20 20v80', dur: '4.5s', begin: '2.2s' },
+  { d: 'M0 120h60a20 20 0 0 1 20 20v120', dur: '5.5s', begin: '3.4s' },
+  { d: 'M0 200h20' },
+  { d: 'M200 0v40a20 20 0 0 0 20 20h100', dur: '4s', begin: '2.8s' },
+]
+
 function Circuit({ className }: { className: string }) {
   return (
     <svg className={`circuit ${className}`} viewBox="0 0 320 320" aria-hidden="true">
-      <path d="M0 60h120a20 20 0 0 1 20 20v80" />
-      <path d="M0 120h60a20 20 0 0 1 20 20v120" />
-      <path d="M0 200h20" />
-      <path d="M200 0v40a20 20 0 0 0 20 20h100" />
-      <circle cx="140" cy="168" r="8" />
-      <circle cx="80" cy="268" r="8" />
-      <circle cx="28" cy="200" r="8" />
-      <circle cx="320" cy="60" r="8" />
+      {CIRCUIT_TRACES.map((t) => (
+        <path key={t.d} d={t.d} />
+      ))}
+      <circle className="node" cx="140" cy="168" r="8" />
+      <circle className="node" cx="80" cy="268" r="8" />
+      <circle className="node" cx="28" cy="200" r="8" />
+      <circle className="node" cx="320" cy="60" r="8" />
+      {CIRCUIT_TRACES.filter((t) => t.dur).map((t) => (
+        <circle key={`pulso-${t.d}`} className="pulse-dot" r="5" opacity="0">
+          <animateMotion path={t.d} dur={t.dur} begin={t.begin} repeatCount="indefinite" />
+          <animate
+            attributeName="opacity"
+            values="0;1;1;0"
+            keyTimes="0;0.1;0.85;1"
+            dur={t.dur}
+            begin={t.begin}
+            repeatCount="indefinite"
+          />
+        </circle>
+      ))}
     </svg>
   )
 }
+
+// Índice para escalonar la animación de aparición
+const stagger = (i: number) => ({ '--i': i }) as CSSProperties
 
 // Ilustraciones de cada plan, dibujadas con la paleta de la marca
 function PlanArt({ kind }: { kind: 'landing' | 'corporate' | 'app' }) {
@@ -343,10 +366,68 @@ const FAQ_VISIBLE = 5
 
 function App() {
   const [showAllFaqs, setShowAllFaqs] = useState(false)
+  const navRef = useRef<HTMLElement>(null)
+
+  // Al mostrar u ocultar preguntas cambia la altura de la página:
+  // la escena fija de "Cómo trabajamos" debe recalcular dónde empieza
+  useEffect(() => {
+    ScrollTrigger.refresh()
+  }, [showAllFaqs])
+
+  useEffect(() => {
+    // Aparición al hacer scroll
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-visible')
+            io.unobserve(e.target)
+          }
+        }
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' },
+    )
+    document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el))
+
+    // Luz que sigue al puntero en las tarjetas
+    const onPointerMove = (e: PointerEvent) => {
+      if (!(e.target instanceof Element)) return
+      const el = e.target.closest<HTMLElement>('.spot')
+      if (!el) return
+      const r = el.getBoundingClientRect()
+      el.style.setProperty('--mx', `${e.clientX - r.left}px`)
+      el.style.setProperty('--my', `${e.clientY - r.top}px`)
+    }
+
+    // Sombra en el menú al bajar
+    const onScroll = () => navRef.current?.classList.toggle('is-scrolled', window.scrollY > 8)
+
+    document.addEventListener('pointermove', onPointerMove, { passive: true })
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+
+    // Scroll suavizado, sincronizado con las animaciones de GSAP
+    let lenis: Lenis | undefined
+    const tick = (time: number) => lenis?.raf(time * 1000)
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      lenis = new Lenis({ anchors: { offset: -64 } })
+      lenis.on('scroll', ScrollTrigger.update)
+      gsap.ticker.add(tick)
+      gsap.ticker.lagSmoothing(0)
+    }
+
+    return () => {
+      gsap.ticker.remove(tick)
+      lenis?.destroy()
+      io.disconnect()
+      document.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [])
 
   return (
     <div className="page">
-      <header className="nav">
+      <header className="nav" ref={navRef}>
         <a href="#inicio" className="nav-brand" aria-label="DaeByte, inicio">
           <img src="/logo-mark.png" alt="" />
           <span>DAEBYTE</span>
@@ -363,7 +444,7 @@ function App() {
         </a>
       </header>
 
-      <section id="inicio" className="hero">
+      <CinematicHero>
         <div className="backdrop" aria-hidden="true">
           <div className="grid" />
           <div className="glow glow-a" />
@@ -408,10 +489,10 @@ function App() {
             ))}
           </ul>
         </div>
-      </section>
+      </CinematicHero>
 
       <section id="servicios" className="section">
-        <div className="section-head">
+        <div className="section-head" data-reveal>
           <span className="eyebrow">Servicios</span>
           <h2>Soluciones digitales para hacer crecer tu negocio</h2>
           <p>
@@ -421,8 +502,8 @@ function App() {
         </div>
 
         <div className="cards">
-          {SERVICES.map((s) => (
-            <article key={s.title} className="card">
+          {SERVICES.map((s, i) => (
+            <article key={s.title} className="card spot" data-reveal style={stagger(i % 3)}>
               <div className="card-icon">{s.icon}</div>
               <h3>{s.title}</h3>
               <p>{s.text}</p>
@@ -432,7 +513,7 @@ function App() {
       </section>
 
       <section id="planes" className="section">
-        <div className="section-head">
+        <div className="section-head" data-reveal>
           <span className="eyebrow">Planes</span>
           <h2>Precios claros, sin sorpresas</h2>
           <p>
@@ -442,8 +523,13 @@ function App() {
         </div>
 
         <div className="plans">
-          {PLANS.map((p) => (
-            <article key={p.name} className={`plan${p.featured ? ' plan-featured' : ''}`}>
+          {PLANS.map((p, i) => (
+            <article
+              key={p.name}
+              className={`plan spot${p.featured ? ' plan-featured' : ''}`}
+              data-reveal
+              style={stagger(i)}
+            >
               {p.featured && <span className="plan-badge">Recomendado</span>}
               <PlanArt kind={p.art} />
 
@@ -494,7 +580,7 @@ function App() {
           ))}
         </div>
 
-        <div className="plans-note">
+        <div className="plans-note" data-reveal>
           <div>
             <strong>Empieza con solo 15% de adelanto</strong>
             <span>El resto se paga al entregar el proyecto.</span>
@@ -511,7 +597,7 @@ function App() {
       </section>
 
       <section id="preguntas" className="section">
-        <div className="section-head">
+        <div className="section-head" data-reveal>
           <span className="eyebrow">Preguntas frecuentes</span>
           <h2>Resolvemos tus dudas</h2>
         </div>
@@ -523,6 +609,8 @@ function App() {
               key={f.q}
               name="faq"
               className={`faq-item${i >= FAQ_VISIBLE ? ' faq-extra' : ''}`}
+              data-reveal
+              style={stagger(i % FAQ_VISIBLE)}
             >
               <summary>
                 {f.q}
@@ -572,29 +660,10 @@ function App() {
         />
       </section>
 
-      <section id="proceso" className="section section-alt">
-        <div className="section-head">
-          <span className="eyebrow">Servicio integral</span>
-          <h2>Todo en un solo lugar, sin depender de múltiples proveedores</h2>
-          <p>
-            Nos encargamos de cada etapa para que tú te enfoques en tu
-            negocio.
-          </p>
-        </div>
-
-        <ol className="steps">
-          {STEPS.map((s, i) => (
-            <li key={s.title} className="step">
-              <span className="step-node">{String(i + 1).padStart(2, '0')}</span>
-              <h3>{s.title}</h3>
-              <p>{s.text}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <ScrollStory />
 
       <section id="clientes" className="section">
-        <div className="section-head">
+        <div className="section-head" data-reveal>
           <span className="eyebrow">Clientes</span>
           <h2>Empresas que confían en nosotros</h2>
           <p>
@@ -605,7 +674,7 @@ function App() {
 
         <ul className="clients">
           {CLIENTS.map((c) => (
-            <li key={c.name} className="client">
+            <li key={c.name} className="client spot" data-reveal>
               <ClientLogo {...c} />
             </li>
           ))}
@@ -613,13 +682,13 @@ function App() {
       </section>
 
       <section id="nosotros" className="section section-alt">
-        <div className="section-head">
+        <div className="section-head" data-reveal>
           <span className="eyebrow">Nosotros</span>
           <h2>Lo que nos mueve</h2>
         </div>
 
         <div className="mv">
-          <article className="mv-card">
+          <article className="mv-card" data-reveal>
             <span className="mv-label">Misión</span>
             <p>
               Desarrollar soluciones de software, principalmente web, a la
@@ -631,7 +700,7 @@ function App() {
               múltiples proveedores.
             </p>
           </article>
-          <article className="mv-card mv-card-dark">
+          <article className="mv-card mv-card-dark" data-reveal style={stagger(1)}>
             <span className="mv-label">Visión</span>
             <p>
               Ser una empresa referente en desarrollo web y servicios de
@@ -645,7 +714,7 @@ function App() {
       </section>
 
       <section id="contacto" className="section">
-        <div className="cta">
+        <div className="cta" data-reveal>
           <Circuit className="circuit-cta" />
           <h2>¿Tienes un proyecto en mente?</h2>
           <p>
