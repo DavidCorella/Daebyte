@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Página no encontrada | DaeByte</title>
+    <meta name="description" content="La página que buscas no existe en daebyte.com." />
+    <!-- Las páginas de error no deben aparecer en Google -->
+    <meta name="robots" content="noindex, follow" />
+    <meta name="theme-color" content="#4f4a80" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Montserrat:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Página independiente (sin React): se sirve en cualquier ruta inexistente,
+         por eso todas las rutas a recursos son absolutas. */
+      :root {
+        --purple: #4f4a80;
+        --purple-light: #7b74c9;
+        --purple-soft: #ecebf7;
+        --navy: #122840;
+        --wa: #25d366;
+        --bg: #fafafe;
+        --border: #e3e2ef;
+        --text: #4a5568;
+        --sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+        --heading: 'Montserrat', 'Inter', system-ui, sans-serif;
+        --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+        color-scheme: light;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        font: 17px/1.6 var(--sans);
+        color: var(--text);
+        background: var(--bg);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Fondo: retícula y resplandor, como la portada */
+      .bg {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(79, 74, 128, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(79, 74, 128, 0.06) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: radial-gradient(ellipse 75% 65% at 50% 40%, #000 25%, transparent 100%);
+      }
+
+      .bg::after {
+        content: '';
+        position: absolute;
+        top: -240px;
+        left: 50%;
+        width: 620px;
+        height: 620px;
+        translate: -50% 0;
+        border-radius: 50%;
+        background: var(--purple-light);
+        opacity: 0.2;
+        filter: blur(120px);
+      }
+
+      header {
+        padding: 18px max(24px, calc((100% - 1120px) / 2));
+        border-bottom: 1px solid var(--border);
+        background: rgba(250, 250, 254, 0.8);
+        backdrop-filter: blur(12px);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        font-family: var(--heading);
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: var(--navy);
+      }
+
+      .brand img {
+        height: 26px;
+        width: auto;
+      }
+
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 48px 24px 64px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 22px;
+      }
+
+      /* Ilustración: chip con una pista cortada */
+      .board {
+        width: 100%;
+        max-width: 600px;
+        height: auto;
+        overflow: visible;
+      }
+
+      .trace {
+        fill: none;
+        stroke: var(--purple-light);
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        opacity: 0.55;
+      }
+
+      .via {
+        fill: var(--bg);
+        stroke: var(--purple-light);
+        stroke-width: 3;
+        opacity: 0.8;
+      }
+
+      .pin {
+        fill: #aab2c8;
+      }
+
+      .chip {
+        fill: var(--navy);
+      }
+
+      .chip-text {
+        font-family: var(--heading);
+        font-size: 46px;
+        font-weight: 800;
+        fill: #fff;
+        letter-spacing: 1px;
+      }
+
+      .chip-label {
+        font-family: var(--mono);
+        font-size: 9px;
+        fill: #a9a3e6;
+        letter-spacing: 1px;
+      }
+
+      .pulse {
+        fill: var(--purple);
+      }
+
+      .spark path {
+        stroke: #f59e0b;
+        stroke-width: 2.5;
+        stroke-linecap: round;
+        animation: spark 0.9s steps(2, end) infinite;
+      }
+
+      .spark path:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+
+      .spark path:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+
+      @keyframes spark {
+        50% {
+          opacity: 0.1;
+        }
+      }
+
+      .led {
+        fill: #ef4444;
+        animation: blink 1.2s ease-in-out infinite;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0.25;
+        }
+      }
+
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--purple);
+      }
+
+      h1 {
+        margin: 0;
+        font-family: var(--heading);
+        font-size: clamp(30px, 5.6vw, 48px);
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--navy);
+      }
+
+      h1 span {
+        background: linear-gradient(90deg, var(--purple), var(--purple-light));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      p {
+        margin: 0;
+        max-width: 520px;
+      }
+
+      .request {
+        max-width: 100%;
+        padding: 8px 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #fff;
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--navy);
+        overflow-wrap: anywhere;
+      }
+
+      .request b {
+        white-space: nowrap;
+        font-weight: 500;
+        color: #dc2626;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 6px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 24px;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s,
+          border-color 0.2s,
+          color 0.2s;
+      }
+
+      .btn svg {
+        width: 18px;
+        height: 18px;
+        flex: none;
+      }
+
+      .btn-primary {
+        color: #fff;
+        background: var(--purple);
+        box-shadow: 0 10px 28px -10px rgba(79, 74, 128, 0.8);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        background: #433e6f;
+      }
+
+      .btn-primary svg {
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .btn-ghost {
+        color: var(--navy);
+        background: #fff;
+        border-color: var(--border);
+      }
+
+      .btn-ghost:hover {
+        border-color: var(--wa);
+        color: #128c4a;
+      }
+
+      .btn-ghost svg {
+        fill: var(--wa);
+      }
+
+      .btn:focus-visible,
+      .links a:focus-visible,
+      .brand:focus-visible {
+        outline: 2px solid var(--purple-light);
+        outline-offset: 3px;
+      }
+
+      .links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        margin: 8px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .links a {
+        display: inline-block;
+        padding: 6px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.75);
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--navy);
+        text-decoration: none;
+      }
+
+      .links a:hover {
+        border-color: var(--purple-light);
+        color: var(--purple);
+      }
+
+      .links-title {
+        margin-top: 10px;
+        font-size: 14px;
+      }
+
+      footer {
+        padding: 20px 24px;
+        border-top: 1px solid var(--border);
+        text-align: center;
+        font-size: 13px;
+      }
+
+      footer strong {
+        font-family: var(--heading);
+        color: var(--purple);
+      }
+
+      @media (max-width: 600px) {
+        main {
+          padding: 32px 16px 48px;
+          gap: 18px;
+        }
+        header {
+          padding-inline: 16px;
+        }
+        .btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+        .pulse {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg" aria-hidden="true"></div>
+
+    <header>
+      <a class="brand" href="/" aria-label="DaeByte, ir al inicio">
+        <img src="/logo-mark.png" alt="" />
+        DAEBYTE
+      </a>
+    </header>
+
+    <main>
+      <svg class="board" viewBox="0 0 600 220" role="img" aria-label="Chip con una pista del circuito cortada">
+        <!-- pistas de la izquierda: la del centro está cortada -->
+        <path class="trace" d="M10 60H120l30 30h82" />
+        <path class="trace" d="M10 110H150" />
+        <path class="trace" d="M178 110H232" />
+        <path class="trace" d="M10 160H120l30-30h82" />
+        <circle class="via" cx="10" cy="60" r="6" />
+        <circle class="via" cx="10" cy="110" r="6" />
+        <circle class="via" cx="10" cy="160" r="6" />
+
+        <!-- pistas de la derecha -->
+        <path class="trace" d="M368 90h82l30-30h110" />
+        <path class="trace" d="M368 110H590" />
+        <path class="trace" d="M368 130h82l30 30h110" />
+        <circle class="via" cx="590" cy="60" r="6" />
+        <circle class="via" cx="590" cy="110" r="6" />
+        <circle class="via" cx="590" cy="160" r="6" />
+
+        <!-- pines y chip -->
+        <g class="pin">
+          <rect x="222" y="86" width="12" height="7" rx="1" />
+          <rect x="222" y="106" width="12" height="7" rx="1" />
+          <rect x="222" y="126" width="12" height="7" rx="1" />
+          <rect x="366" y="86" width="12" height="7" rx="1" />
+          <rect x="366" y="106" width="12" height="7" rx="1" />
+          <rect x="366" y="126" width="12" height="7" rx="1" />
+          <rect x="262" y="38" width="7" height="12" rx="1" />
+          <rect x="296" y="38" width="7" height="12" rx="1" />
+          <rect x="330" y="38" width="7" height="12" rx="1" />
+          <rect x="262" y="170" width="7" height="12" rx="1" />
+          <rect x="296" y="170" width="7" height="12" rx="1" />
+          <rect x="330" y="170" width="7" height="12" rx="1" />
+        </g>
+        <rect class="chip" x="232" y="48" width="136" height="124" rx="10" />
+        <circle class="led" cx="250" cy="64" r="4.5" />
+        <text class="chip-text" x="300" y="127" text-anchor="middle">404</text>
+        <text class="chip-label" x="300" y="158" text-anchor="middle">SIN SEÑAL</text>
+
+        <!-- chispas en el corte -->
+        <g class="spark">
+          <path d="M156 102l8 8-8 8" fill="none" />
+          <path d="M164 96l-2 10" />
+          <path d="M168 122l-4-10" />
+        </g>
+
+        <!-- la señal viaja hasta el corte y se pierde -->
+        <circle class="pulse" r="5" opacity="0">
+          <animateMotion path="M10 110H150" dur="1.8s" repeatCount="indefinite" />
+          <animate
+            attributeName="opacity"
+            values="0;1;1;0"
+            keyTimes="0;0.1;0.8;1"
+            dur="1.8s"
+            repeatCount="indefinite"
+          />
+        </circle>
+      </svg>
+
+      <span class="eyebrow">Error 404 · Señal perdida</span>
+
+      <h1>Esta ruta <span>no está conectada</span></h1>
+
+      <p>
+        La página que buscas no existe, cambió de dirección o el enlace está
+        incompleto. Pero no te preocupes: te ayudamos a llegar a donde
+        necesitas.
+      </p>
+
+      <div class="request" aria-label="Dirección solicitada">
+        GET <span id="ruta">/</span> → <b>404 Not Found</b>
+      </div>
+
+      <div class="actions">
+        <a class="btn btn-primary" href="/">
+          Volver al inicio
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </a>
+        <a
+          class="btn btn-ghost"
+          href="https://wa.me/50660960986?text=Hola%20DaeByte%2C%20me%20gustar%C3%ADa%20informaci%C3%B3n%20sobre%20sus%20servicios."
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.7.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.18-1.41-.08-.13-.28-.2-.57-.35m-5.42 7.4h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.88 9.88m8.41-18.3A11.82 11.82 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.89a11.82 11.82 0 0 0-3.48-8.41z" />
+          </svg>
+          Escríbenos por WhatsApp
+        </a>
+      </div>
+
+      <p class="links-title">O visita alguna de estas secciones:</p>
+      <ul class="links">
+        <li><a href="/#servicios">Servicios</a></li>
+        <li><a href="/#planes">Planes y precios</a></li>
+        <li><a href="/#preguntas">Preguntas frecuentes</a></li>
+        <li><a href="/#contacto">Contacto</a></li>
+      </ul>
+    </main>
+
+    <footer>
+      © <span id="anio">2026</span> DaeByte · <strong>Más que bytes, soluciones.</strong>
+    </footer>
+
+    <script>
+      // Muestra la ruta que no existe (como texto, nunca como HTML)
+      var ruta = location.pathname
+      try {
+        ruta = decodeURI(ruta)
+      } catch (e) {
+        // dirección mal codificada: se muestra tal cual
+      }
+      document.getElementById('ruta').textContent = ruta
+      document.getElementById('anio').textContent = new Date().getFullYear()
+    </script>
+  </body>
+</html>
