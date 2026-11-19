@@ -1,10 +1,19 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+  type ReactNode,
+} from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 import 'lenis/dist/lenis.css'
 import CinematicHero from './CinematicHero.tsx'
 import ScrollStory from './ScrollStory.tsx'
+// Decoración de Navidad / Año Nuevo (se enciende y apaga sola; ver src/temporada/config.ts)
+import Temporada from './temporada/Temporada.tsx'
 import './App.css'
 
 const CONTACT_EMAIL = 'contacto@daebyte.com'
@@ -361,6 +370,17 @@ const InstagramIcon = () => (
   </svg>
 )
 
+// El HTML se prerenderiza con el año de compilación; en el navegador se pasa al
+// año actual después de hidratar (si no, al cambiar de año React marca un error)
+const noSubscribe = () => () => {}
+function CurrentYear() {
+  return useSyncExternalStore(
+    noSubscribe,
+    () => new Date().getFullYear(),
+    () => __BUILD_YEAR__,
+  )
+}
+
 // Preguntas visibles antes de pulsar "Ver más"; el resto sigue en el HTML para Google
 const FAQ_VISIBLE = 5
 
@@ -427,6 +447,8 @@ function App() {
 
   return (
     <div className="page">
+      <Temporada />
+
       <header className="nav" ref={navRef}>
         <a href="#inicio" className="nav-brand" aria-label="DaeByte, inicio">
           <img src="/logo-mark.png" alt="" />
@@ -767,7 +789,7 @@ function App() {
       <footer className="footer">
         <span className="footer-brand">
           <img src="/logo-mark.png" alt="" />
-          © {new Date().getFullYear()} DaeByte. Todos los derechos reservados.
+          © <CurrentYear /> DaeByte. Todos los derechos reservados.
         </span>
         <div className="footer-social">
           <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">

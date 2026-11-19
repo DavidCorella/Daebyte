@@ -54,4 +54,8 @@ function notFoundPage(): Plugin {
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), notFoundPage()],
+  // año de compilación: el pie de página lo usa en el HTML prerenderizado
+  define: {
+    __BUILD_YEAR__: JSON.stringify(new Date().getFullYear()),
+  },
 })
